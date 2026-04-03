@@ -1,3 +1,4 @@
+import discord
 from discord import app_commands
 from discord.ext import commands
 
@@ -8,35 +9,66 @@ class AdminCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="configurar_canal_ingles", description="Define o canal oficial de inglês do servidor.")
+    @app_commands.command(
+        name="configurar_canal_ingles",
+        description="Define o canal oficial de inglês do servidor."
+    )
     @app_commands.describe(canal="Canal de texto")
     @app_commands.checks.has_permissions(administrator=True)
-    async def configurar_canal_ingles(self, interaction, canal):
+    async def configurar_canal_ingles(
+        self,
+        interaction: discord.Interaction,
+        canal: discord.TextChannel
+    ):
         await interaction.response.defer(ephemeral=True)
+
         cfg = await self.bot.config_service.get_guild_config(interaction.guild.id)
         cfg["english_channel_id"] = canal.id
         await self.bot.config_service.save_guild_config(interaction.guild.id, cfg)
+
         await interaction.followup.send(
-            embed=success_embed("Configuração salva", f"Canal de inglês definido como {canal.mention}."),
+            embed=success_embed(
+                "Configuração salva",
+                f"Canal de inglês definido como {canal.mention}."
+            ),
             ephemeral=True,
         )
 
     @configurar_canal_ingles.error
-    async def configurar_canal_ingles_error(self, interaction, error):
+    async def configurar_canal_ingles_error(
+        self,
+        interaction: discord.Interaction,
+        error: app_commands.AppCommandError
+    ):
         if isinstance(error, app_commands.MissingPermissions):
             if interaction.response.is_done():
-                await interaction.followup.send(embed=error_embed("Você precisa ser administrador para usar este comando."), ephemeral=True)
+                await interaction.followup.send(
+                    embed=error_embed("Você precisa ser administrador para usar este comando."),
+                    ephemeral=True
+                )
             else:
-                await interaction.response.send_message(embed=error_embed("Você precisa ser administrador para usar este comando."), ephemeral=True)
+                await interaction.response.send_message(
+                    embed=error_embed("Você precisa ser administrador para usar este comando."),
+                    ephemeral=True
+                )
             return
 
         if interaction.response.is_done():
-            await interaction.followup.send(embed=error_embed("Ocorreu um erro inesperado."), ephemeral=True)
+            await interaction.followup.send(
+                embed=error_embed("Ocorreu um erro inesperado."),
+                ephemeral=True
+            )
         else:
-            await interaction.response.send_message(embed=error_embed("Ocorreu um erro inesperado."), ephemeral=True)
+            await interaction.response.send_message(
+                embed=error_embed("Ocorreu um erro inesperado."),
+                ephemeral=True
+            )
 
-    @app_commands.command(name="ver_config", description="Mostra as configurações atuais do RA Translate.")
-    async def ver_config(self, interaction):
+    @app_commands.command(
+        name="ver_config",
+        description="Mostra as configurações atuais do RA Translate."
+    )
+    async def ver_config(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
         cfg = await self.bot.config_service.get_guild_config(interaction.guild.id)
 
@@ -60,7 +92,10 @@ class AdminCog(commands.Cog):
             f"**Limite diário:** {cfg.get('daily_limit', 20)} usos por usuário"
         )
 
-        await interaction.followup.send(embed=success_embed("Configurações", description), ephemeral=True)
+        await interaction.followup.send(
+            embed=success_embed("Configurações", description),
+            ephemeral=True
+        )
 
 
 async def setup(bot):
