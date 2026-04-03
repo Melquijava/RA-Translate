@@ -1,0 +1,5 @@
+import os
+
+MAX_TEXT_LENGTH = int(os.getenv("MAX_TEXT_LENGTH", "800"))
+DEFAULT_COOLDOWN_SECONDS = int(os.getenv("DEFAULT_COOLDOWN_SECONDS", "8"))
+DEFAULT_DAILY_LIMIT = int(os.getenv("DEFAULT_DAILY_LIMIT", "20"))
