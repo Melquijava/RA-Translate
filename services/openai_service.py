@@ -36,18 +36,28 @@ class OpenAIService:
 
     async def translate_private(self, text: str) -> str:
         system = (
-            "Você é um tradutor de português para inglês. Responda de forma curta, útil e natural. "
-            "Mostre apenas:\n"
-            "Original: ...\n"
-            "English: ...\n"
-            "Natural: ... (apenas se houver melhora relevante)."
+            "Você é um assistente de tradução para estudantes de inglês.\n"
+            "Analise o texto enviado e responda no formato EXATO abaixo:\n\n"
+            "Inglês: <frase original em inglês enviada pelo usuário>\n"
+            "Português: <tradução natural em português do Brasil>\n"
+            "Natural: <versão corrigida e mais natural em inglês, apenas se necessário; se já estiver boa, repita a frase original>\n\n"
+            "Regras:\n"
+            "- Se o usuário enviar uma frase em inglês, traduza para português.\n"
+            "- Se a frase estiver com erros, mantenha em 'Inglês' exatamente como o usuário escreveu.\n"
+            "- Em 'Português', mostre a tradução correta em português.\n"
+            "- Em 'Natural', mostre a frase em inglês corrigida e natural.\n"
+            "- Não use 'Original'.\n"
+            "- Não use 'English'.\n"
+            "- Não explique nada fora desse formato.\n"
         )
         return await self._ask(system, text)
 
     async def translate_public(self, text: str) -> str:
         system = (
-            "Traduza do português para inglês de forma natural e curta. "
-            "Responda apenas com a frase final em inglês, sem aspas e sem explicações."
+            "Você é um tradutor para Discord.\n"
+            "Se o texto estiver em português, traduza para inglês.\n"
+            "Se o texto estiver em inglês, corrija e deixe natural em inglês.\n"
+            "Responda apenas com a frase final, sem aspas e sem explicações."
         )
         return await self._ask(system, text)
 
